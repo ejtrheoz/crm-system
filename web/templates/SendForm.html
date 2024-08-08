@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Order Add Form</title>
+    {% if alert %}
+    <script>alert("This product is no longer available")</script>
+    {% endif %}
+
+    <style>
+        .ids {
+            flex-direction: column;
+        }
+
+    </style>
+</head>
+<body>
+    <form style="padding-left: 15px;" method="post">
+
+        <div class="ids">
+            <div class="form-group">
+                <label>Type</label>
+                <select class="form-control" name="type1" id="imageSelector1">
+                    <option value="ring">Ring</option>
+                    <option value="bracelette">Bracelette</option>
+                    <option value="necklace">Necklace</option>
+                    <option value="earrings">Earrings</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="exampleInputEmail1">ID</label>
+                <input type="text" name="id1" autocomplete="off" class="form-control" id="id-input1" onkeyup="changeOutput(1)" aria-describedby="emailHelp" >
+                <div class="result-box1"></div>
+            </div>
+
+            <img  id="product-image1" width="200" height="200">
+
+            <div class="form-group">
+                <label for="exampleInputPassword1">Amount</label>
+                <input  name="amount1"  class="form-control" id="amount-input1" >
+            </div>
+
+            
+
+        </div>
+
+        <button  type="button" onclick="addIndex()">Add Product</button>
+
+        
+        
+
+        <div class="form-group">
+          <label for="exampleInputPassword1">Name</label>
+          <input  name="name"  class="form-control" id="name-input" >
+        </div>
+
+        <div class="form-group">
+            <label for="exampleInputPassword1">Address Destination</label>
+            <input  name="destination"  class="form-control" id="destination-input" >
+        </div>
+
+        <div class="form-group">
+            <label for="exampleInputPassword1">Phone</label>
+            <input name="phone" class="form-control" id="phone-input" >
+        </div>
+
+        <div class="form-group">
+            <label for="exampleInputPassword1">Mail</label>
+            <input  name="mail" class="form-control" id="mail-input" >
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    
+    <script>
+        let available_products = JSON.parse('{{ products | tojson | safe }}');
+        let index = 1
+    
+
+        function changeOutput (id) {
+            
+            let inputBox = document.getElementById(`id-input${id}`)
+            let resultsBox = document.querySelector(`.result-box${id}`)
+            let image = document.getElementById(`product-image${id}`)
+            
+            let result = []
+            let input = inputBox.value
+
+            if (input.length){
+                result = available_products.filter( (keyword) => {
+                    return keyword.includes(input)
+                })
+            }
+
+            content = result.map((keyword) => {
+                return "<li>" + keyword + "</li>"
+            })
+
+            resultsBox.innerHTML = '<ul style="list-style: none; border-radius: 3px; padding: 15px 10px;">' + content.join('') + '</ul>'
+            image.src = `/static/images/${inputBox.value}.jpg`
+        }
+
+        function addIndex() {
+            index++
+            ids.innerHTML += `
+            <div class="form-group">
+                <label>Type</label>
+                <select class="form-control" name="type${index}" id="imageSelector${index}">
+                    <option value="ring">Ring</option>
+                    <option value="bracelette">Bracelette</option>
+                    <option value="necklace">Necklace</option>
+                    <option value="earrings">Earrings</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="exampleInputEmail1">ID</label>
+                <input type="text" onkeyup="changeOutput(${index})" name="id${index}" autocomplete="off" class="form-control" id="id-input${index}" aria-describedby="emailHelp" >
+                <div class="result-box${index}"></div>
+            </div>
+
+            <img  id="product-image${index}" width="200" height="200">
+
+            <div class="form-group">
+                <label for="exampleInputPassword1">Amount</label>
+                <input  name="amount${index}"  class="form-control" id="amount-input${index}" >
+            </div>
+
+            `
+        }
+
+        
+        const nameInput = document.getElementById("name-input")
+        const mailInput = document.getElementById("mail-input")
+        const destinationInput = document.getElementById("destination-input")
+        const phoneInput = document.getElementById("phone-input")
+        const imageSelector = document.getElementById("imageSelector1")
+        const ids = document.querySelector(".ids")
+
+        const url = new URL(window.location.href)
+        const searchParams = new URLSearchParams(url.search)
+        const length = Number(searchParams.get("length"))
+        const order = searchParams.get("order")
+
+        for (let i = 2; i <= length; i++){
+            addIndex()
+        }
+
+
+        if (order)
+        {
+            let array = []
+            let personalData = []
+            for (let i of order.split(':')){
+                if (i.split(',').length === 1 ) {
+                    array.push(i)
+                }else{
+                    array.push( i.split(',').slice(0, i.split(',').length-1).join(''))
+                }
+            }
+
+            array = array.slice(1, array.length).map((element) => element.replace(/'/g, ""))
+            array = array.map(el => el.replace(/}/g, ""))
+            array = array.map(el => el.replace(/{/g, ""))
+            array = array.map(el => el.replace(' ', ''))
+            personalData = array.slice(-4)
+
+            for (let i = 0; i < length; i++)
+            {
+                let imageSelector = document.getElementById(`imageSelector${i+1}`)
+                let idInput = document.getElementById(`id-input${i+1}`)
+                let amountInput = document.getElementById(`amount-input${i+1}`)
+                let image = document.getElementById(`product-image${i+1}`) 
+
+                imageSelector.value = array[i*3]
+                idInput.value = array[i*3+1]
+                amountInput.value = array[i*3+2]
+                image.src = `/static/images/${array[i*3+1]}.jpg`
+            }
+
+            nameInput.value = personalData[0]
+            destinationInput.value = personalData[1]
+            phoneInput.value = personalData[2]
+            mailInput.value = personalData[3]
+            
+        }
+
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>

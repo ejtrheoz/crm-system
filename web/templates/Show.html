@@ -1,0 +1,12 @@
+{% extends "templates/Delete.html" %}
+{% block image %}
+    <img style="padding-left: 15px;" src="/static/images/{{new_info[0]}}.jpg" id="userImage" class="img-thumbnail" width="200" height="200"> 
+{% endblock %}
+{% block content %}
+    <div style="padding-left: 15px;">
+        <h3>ID - {{new_info[0]}}</h3>
+        <h3>Amount - {{new_info[1]}}</h3>
+        <h3>Buy Price - {{new_info[2]}}$</h3>
+        <h3>Sell Price - {{new_info[3]}}$</h3>
+    </div>
+{% endblock %}
