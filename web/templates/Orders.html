@@ -16,6 +16,9 @@
             <h4>ID: {{orders[i]["id" + j|string]}}</h4>
             <h4>Type: {{orders[i]["type" + j|string]}}</h4>
             <h4>Amount: {{orders[i]["amount" + j|string]}}</h4>
+            {% if orders[i]["type" + j|string] == "ring"%}
+            <h4>Ring Size: {{orders[i]["ringsize" + j|string]}}</h4>
+            {% endif %}
           {% endfor %}
 
           <h4>Name: {{orders[i]["name"]}}</h4>

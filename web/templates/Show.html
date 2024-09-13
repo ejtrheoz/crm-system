@@ -5,8 +5,12 @@
 {% block content %}
     <div style="padding-left: 15px;">
         <h3>ID - {{new_info[0]}}</h3>
+        <h3>Name - {{new_info[5]}}</h3>
         <h3>Amount - {{new_info[1]}}</h3>
-        <h3>Buy Price - {{new_info[2]}}$</h3>
-        <h3>Sell Price - {{new_info[3]}}$</h3>
+        {% if new_info[4] ==  "ring" %}
+        <h3>Ring Size - {{new_info[6]}}</h3>
+        {% endif %}
+        <h3>Buy Price - {{new_info[2]}} грн</h3>
+        <h3>Sell Price - {{new_info[3]}} грн$</h3>
     </div>
 {% endblock %}

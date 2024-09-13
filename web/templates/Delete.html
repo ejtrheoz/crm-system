@@ -8,32 +8,120 @@
 </head>
 <body>
     <form style="padding-left: 15px;" method="post">
+        <label>Type</label>
+        <select onchange="changeIds()" class="form-control" name="type" id="typeSelector">
+            <option value="earrings">Earrings</option>
+            <option value="bracelette">Bracelette</option>
+            <option value="ring">Ring</option>
+            <option value="necklace">Necklace</option>
+        </select>
+            
         <div class="form-group">
             <label>ID</label>
             <select class="form-control" name="id" id="imageSelector" onchange="changeImage()">
-                {% for i in products %}
+                {% for i in products["earrings"] %}
                     <option style="padding: 10px;" value="{{i}}">{{i}}</option>
                 {% endfor %}
             </select>
             {% block form %}{% endblock %}
         </div>
+        <div class="ring-sizes"></div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 
 
     {% block image %}
-        <img src="/static/images/{{products[0]}}.jpg" id="userImage" class="img-thumbnail" width="200" height="200">
+        <img src="/static/images/{{products['earrings'][0]}}.jpg" id="userImage" class="img-thumbnail" width="200" height="200">
     {% endblock %}
     {% block content %}{% endblock %}
     <script>
         function changeImage() {
-            const selector = document.getElementById('imageSelector');
-            const userImage = document.getElementById('userImage');
-            let selectedValue = selector.value;
+            let selector = document.getElementById('imageSelector');
+            let userImage = document.getElementById('userImage');
+            let selectedValue = selector.value.split(' ')[0];
+            let size = document.querySelector('.ring-sizes')
+            let type = document.getElementById('typeSelector')
             
             let path = '/static/images/' + selectedValue + '.jpg';
             userImage.src = path
 
+            if (type.value === "ring")
+            {
+                size.innerHTML = `<h5>Size: ${selector.value.split(' ')[1]}</h5>`
+            }
+            else{
+                size.innerHTML = ""
+            }
+
+        }
+
+        function changeIds() {
+
+            let rings = {{products["rings"]|tojson}}
+            let necklaces = {{products["necklaces"]|tojson}}
+            let earrings = {{products["earrings"]|tojson}}
+            let bracelettes = {{products["bracelettes"]|tojson}}
+
+            const imageSelector = document.getElementById('imageSelector');
+            const typeSelector = document.getElementById('typeSelector');
+            const parameters = document.getElementById('parameterSelector')
+
+
+            imageSelector.innerHTML = ""
+
+            if (typeSelector.value === "ring" )
+            {
+                for (i of rings)
+                {
+                    // imageSelector.innerHTML += `<option style="padding: 10px;" value="${i}">${i}</option>`
+                    imageSelector.innerHTML += `<option style="padding: 10px;" value="${i}">${i.split(' ')[0]}</option>`
+                }
+                parameters.innerHTML = `<option value="amount">Amount</option>
+        <option value="buy_price">Buy Price</option>
+        <option value="sell_price">Sell Price</option>
+        <option value="name">Name</option>
+        <option value="ring_size">Ring Size</option>`
+            }
+
+            if (typeSelector.value === "necklace" )
+            {
+                for (i of necklaces)
+                {
+                    imageSelector.innerHTML += `<option style="padding: 10px;" value="${i}">${i}</option>`
+                }
+                parameters.innerHTML = `<option value="amount">Amount</option>
+        <option value="buy_price">Buy Price</option>
+        <option value="name">Name</option>
+        <option value="sell_price">Sell Price</option>`
+            }
+
+            if (typeSelector.value === "earrings" )
+            {
+                for (i of earrings)
+                {
+                    imageSelector.innerHTML += `<option style="padding: 10px;" value="${i}">${i}</option>`
+                }
+                parameters.innerHTML = `<option value="amount">Amount</option>
+        <option value="buy_price">Buy Price</option>
+        <option value="name">Name</option>
+        <option value="sell_price">Sell Price</option>`
+        
+            }
+
+            if (typeSelector.value === "bracelette" )
+            {
+                for (i of bracelettes)
+                {
+                    imageSelector.innerHTML += `<option style="padding: 10px;" value="${i}">${i}</option>`
+                }
+                parameters.innerHTML = `<option value="amount">Amount</option>
+        <option value="buy_price">Buy Price</option>
+        <option value="name">Name</option>
+        <option value="sell_price">Sell Price</option>`
+            } 
+
+
+            changeImage()
         }
     </script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
